@@ -2,7 +2,7 @@ using System.Buffers;
 
 using MDI.IO.Hashing;
 
-namespace MDI.IO.Encoding.Philips.M1350;
+namespace MDI.IO.Encoding.Philips.M1350.DataLink;
 
 /// <summary>
 /// Writes Philips M1350 data blocks to some destination.

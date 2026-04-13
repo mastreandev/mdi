@@ -1,17 +1,17 @@
 using System.Buffers;
 
-using MDI.IO.Encoding.Philips.M1350;
+using MDI.IO.Encoding.Philips.M1350.DataLink;
 
-namespace MDI.Tests.IO.Encoding.Philips.M1350.Writer;
+namespace MDI.Tests.IO.Encoding.Philips.M1350.DataLink;
 
 [TestClass]
-public sealed class SkipValidationFalseWriterTests : IDisposable
+public sealed class DataBlockWriterValidationTests : IDisposable
 {
     private readonly ArrayBufferWriter<byte> output = new();
     private readonly DataBlockWriterOptions options = new(SkipValidation: false);
     private readonly DataBlockWriter subject;
 
-    public SkipValidationFalseWriterTests()
+    public DataBlockWriterValidationTests()
     {
         this.subject = new DataBlockWriter(this.output, this.options);
     }

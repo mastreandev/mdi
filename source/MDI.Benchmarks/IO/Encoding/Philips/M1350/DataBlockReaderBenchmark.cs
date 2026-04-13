@@ -2,7 +2,7 @@ using System.Buffers;
 
 using BenchmarkDotNet.Attributes;
 
-using MDI.IO.Encoding.Philips.M1350;
+using MDI.IO.Encoding.Philips.M1350.DataLink;
 
 namespace MDI.Benchmarks.IO.Encoding.Philips.M1350;
 

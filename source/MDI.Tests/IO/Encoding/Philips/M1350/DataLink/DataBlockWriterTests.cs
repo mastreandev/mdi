@@ -1,20 +1,20 @@
 using System.Buffers;
 using System.Buffers.Binary;
 
-using MDI.IO.Encoding.Philips.M1350;
+using MDI.IO.Encoding.Philips.M1350.DataLink;
 using MDI.IO.Hashing;
 
-namespace MDI.Tests.IO.Encoding.Philips.M1350.Writer;
+namespace MDI.Tests.IO.Encoding.Philips.M1350.DataLink;
 
 [TestClass]
-public sealed class BasicWriterTests : IDisposable
+public sealed class DataBlockWriterTests : IDisposable
 {
     private static readonly byte[] KnownPayloadBytes = "Check this message!"u8.ToArray();
 
     private readonly ArrayBufferWriter<byte> output = new();
-    private readonly DataBlockWriter subject;
+    private DataBlockWriter subject;
 
-    public BasicWriterTests()
+    public DataBlockWriterTests()
     {
         this.subject = new DataBlockWriter(this.output);
     }
@@ -143,5 +143,99 @@ public sealed class BasicWriterTests : IDisposable
         Assert.AreEqual(0, this.subject.BytesCommitted);
 
         _ = Assert.Throws<InvalidOperationException>(this.subject.WriteEnd);
+    }
+
+    // Performance/SkipValidation tests
+
+    [TestMethod]
+    public void SkipValidationShouldNotEscapeData()
+    {
+        this.subject.Dispose();
+        this.output.Clear();
+        this.subject = new DataBlockWriter(this.output, new(SkipValidation: true));
+
+        Span<byte> value = new byte[16];
+        value[0] = DataBlockConstants.DLE;
+
+        this.subject.WriteData(value);
+        this.subject.Flush();
+
+        Assert.AreEqual(DataBlockConstants.DLE, this.output.WrittenSpan[0]);
+        Assert.AreNotEqual(DataBlockConstants.DLE, this.output.WrittenSpan[1]);
+    }
+
+    [TestMethod]
+    public void SkipValidationShouldAllowMissingStart()
+    {
+        this.subject.Dispose();
+        this.output.Clear();
+        this.subject = new DataBlockWriter(this.output, new(SkipValidation: true));
+
+        this.subject.WriteData();
+        this.subject.WriteEnd();
+        this.subject.WriteCrc();
+        this.subject.Flush();
+
+        byte[] crc = Crc16.Hash(DataBlockConstants.EndBlock);
+
+        byte[] expected =
+        [
+            .. DataBlockConstants.EndBlock,
+            .. crc,
+        ];
+
+        CollectionAssert.AreEqual(expected, this.output.WrittenSpan.ToArray());
+    }
+
+    [TestMethod]
+    public void SkipValidationShouldAllowMissingData()
+    {
+        this.subject.Dispose();
+        this.output.Clear();
+        this.subject = new DataBlockWriter(this.output, new(SkipValidation: true));
+
+        this.subject.WriteStart();
+        this.subject.WriteEnd();
+        this.subject.WriteCrc();
+        this.subject.Flush();
+
+        byte[] frame =
+        [
+            .. DataBlockConstants.StartBlock,
+            .. DataBlockConstants.EndBlock,
+        ];
+
+        byte[] crc = Crc16.Hash(frame);
+
+        byte[] expected =
+        [
+            .. frame,
+            .. crc,
+        ];
+
+        CollectionAssert.AreEqual(expected, this.output.WrittenSpan.ToArray());
+    }
+
+    [TestMethod]
+    public void SkipValidationShouldAllowMissingEnd()
+    {
+        this.subject.Dispose();
+        this.output.Clear();
+        this.subject = new DataBlockWriter(this.output, new(SkipValidation: true));
+
+        this.subject.WriteStart();
+        this.subject.WriteData();
+        this.subject.WriteCrc();
+        this.subject.Flush();
+
+        byte[] crc = Crc16.Hash(DataBlockConstants.StartBlock);
+
+        byte[] expected =
+        [
+            .. DataBlockConstants.StartBlock,
+            .. crc,
+        ];
+
+        CollectionAssert.AreEqual(expected, this.output.WrittenSpan.ToArray());
     }
 }

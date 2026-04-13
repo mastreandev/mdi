@@ -3,7 +3,7 @@ using System.Buffers.Binary;
 
 using MDI.IO.Hashing;
 
-namespace MDI.IO.Encoding.Philips.M1350;
+namespace MDI.IO.Encoding.Philips.M1350.DataLink;
 
 public static class DataBlockReader
 {

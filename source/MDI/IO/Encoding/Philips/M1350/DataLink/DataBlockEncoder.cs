@@ -1,6 +1,6 @@
 using System.Buffers;
 
-namespace MDI.IO.Encoding.Philips.M1350;
+namespace MDI.IO.Encoding.Philips.M1350.DataLink;
 
 /// <summary>
 /// Encodes raw Philips M1350 data blocks.

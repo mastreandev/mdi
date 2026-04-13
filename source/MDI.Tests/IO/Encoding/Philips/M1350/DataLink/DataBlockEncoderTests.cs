@@ -1,11 +1,11 @@
 using System.Buffers;
 
-using MDI.IO.Encoding.Philips.M1350;
+using MDI.IO.Encoding.Philips.M1350.DataLink;
 
-namespace MDI.Tests.IO.Encoding.Philips.M1350.Encoder;
+namespace MDI.Tests.IO.Encoding.Philips.M1350.DataLink;
 
 [TestClass]
-public sealed class BasicEncoderTests
+public sealed class DataBlockEncoderTests
 {
     [TestMethod]
     [DataRow(null, -1)]

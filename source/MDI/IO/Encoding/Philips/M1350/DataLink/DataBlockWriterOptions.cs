@@ -1,4 +1,4 @@
-namespace MDI.IO.Encoding.Philips.M1350;
+namespace MDI.IO.Encoding.Philips.M1350.DataLink;
 
 /// <summary>
 /// Allows defining custom behavior when writing Philips M1350 encoded data
