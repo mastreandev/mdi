@@ -127,4 +127,21 @@ public sealed class BasicWriterTests : IDisposable
 
         Assert.IsTrue(this.output.WrittenSpan.Length > value.Length * 2);
     }
+
+    [TestMethod]
+    public void ResetShouldClearInternalState()
+    {
+        this.subject.WriteStart();
+        this.subject.WriteData(KnownPayloadBytes);
+        this.subject.Flush();
+
+        Assert.IsTrue(this.subject.BytesCommitted > 0);
+
+        this.subject.Reset();
+
+        Assert.AreEqual(0, this.subject.BytesPending);
+        Assert.AreEqual(0, this.subject.BytesCommitted);
+
+        _ = Assert.Throws<InvalidOperationException>(this.subject.WriteEnd);
+    }
 }

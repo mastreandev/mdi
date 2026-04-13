@@ -54,6 +54,39 @@ public sealed class AdvancedReaderTests : IDisposable
         Assert.IsFalse(result);
     }
 
+    [TestMethod]
+    public void InvalidDataEscapeShouldDiscardPartialAndContinue()
+    {
+        ArrayBufferWriter<byte> validOutput = new();
+        using DataBlockWriter validWriter = new(validOutput);
+
+        validWriter.WriteStart();
+        validWriter.WriteData(Buffer);
+        validWriter.WriteEnd();
+        validWriter.WriteCrc();
+        validWriter.Flush();
+
+        List<byte> data =
+        [
+            DataBlockConstants.DLE,
+            DataBlockConstants.STX,
+            0x01,
+            DataBlockConstants.DLE,
+            0x20,
+        ];
+
+        data.AddRange(validOutput.WrittenSpan.ToArray());
+
+        byte[] payload = [.. data];
+        ReadOnlySequence<byte> buffer = new(payload);
+
+        bool result = DataBlockReader.TryRead(ref buffer, out ReadOnlySequence<byte> block);
+
+        Assert.IsTrue(result);
+        CollectionAssert.AreEqual(Buffer, block.ToArray());
+        Assert.AreEqual(0, buffer.Length);
+    }
+
     private static void Check(ReadOnlyMemory<byte> memory, int expectedBlockCount = 0, int expectedBufferLength = 0)
     {
         ReadOnlySequence<byte> buffer = new(memory);
