@@ -1,6 +1,6 @@
-namespace MDI.Tests.IO;
+namespace MDI.Tests.IO.Hashing;
 
-public static class Constants
+public static class HashingFixtures
 {
     public const string KnownMessage = "Check this message!";
     public const ushort KnownMessageCrc = 0x9e8f;

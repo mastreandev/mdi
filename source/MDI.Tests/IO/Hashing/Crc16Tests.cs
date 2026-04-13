@@ -7,19 +7,19 @@ namespace MDI.Tests.IO.Hashing;
 [TestClass]
 public sealed class Crc16Tests
 {
-    private readonly ReadOnlyMemory<byte> source = Constants.KnownMessageBytes;
+    private readonly ReadOnlyMemory<byte> source = HashingFixtures.KnownMessageBytes;
     private readonly Memory<byte> destination = new byte[sizeof(ushort)];
     private readonly Crc16 subject = new();
 
     [TestMethod]
     public void HashBytes()
     {
-        byte[] source = Constants.KnownMessageBytes;
+        byte[] source = HashingFixtures.KnownMessageBytes;
         byte[] destination = Crc16.Hash(source);
 
         ushort crc = BinaryPrimitives.ReadUInt16BigEndian(destination);
 
-        Assert.AreEqual(Constants.KnownMessageCrc, crc);
+        Assert.AreEqual(HashingFixtures.KnownMessageCrc, crc);
     }
 
     [TestMethod]
@@ -36,20 +36,20 @@ public sealed class Crc16Tests
     [TestMethod]
     public void HashSpan()
     {
-        ReadOnlySpan<byte> source = Constants.KnownMessageBytes;
+        ReadOnlySpan<byte> source = HashingFixtures.KnownMessageBytes;
         Span<byte> destination = stackalloc byte[sizeof(ushort)];
 
         int size = Crc16.Hash(source, destination);
         ushort crc = BinaryPrimitives.ReadUInt16BigEndian(destination);
 
         Assert.AreEqual(sizeof(ushort), size);
-        Assert.AreEqual(Constants.KnownMessageCrc, crc);
+        Assert.AreEqual(HashingFixtures.KnownMessageCrc, crc);
     }
 
     [TestMethod]
     public void TryHash()
     {
-        ReadOnlySpan<byte> source = Constants.KnownMessageBytes;
+        ReadOnlySpan<byte> source = HashingFixtures.KnownMessageBytes;
         Span<byte> destination = stackalloc byte[sizeof(ushort)];
 
         bool result = Crc16.TryHash(source, destination, out int size);
@@ -113,7 +113,7 @@ public sealed class Crc16Tests
 
         ushort crc = BinaryPrimitives.ReadUInt16BigEndian(this.destination.Span);
 
-        Assert.AreEqual(Constants.KnownMessageCrc, crc);
+        Assert.AreEqual(HashingFixtures.KnownMessageCrc, crc);
     }
 
     [TestMethod]
@@ -155,7 +155,7 @@ public sealed class Crc16Tests
 
         Assert.IsTrue(result);
         Assert.AreEqual(sizeof(ushort), bytesWritten);
-        Assert.AreEqual(Constants.KnownMessageCrc, crc);
+        Assert.AreEqual(HashingFixtures.KnownMessageCrc, crc);
     }
 
     [TestMethod]
@@ -167,7 +167,7 @@ public sealed class Crc16Tests
 
         Assert.IsTrue(result);
         Assert.AreEqual(sizeof(ushort), bytesWritten);
-        Assert.AreEqual(Constants.KnownMessageCrc, crc1);
+        Assert.AreEqual(HashingFixtures.KnownMessageCrc, crc1);
 
         result = this.subject.TryGetCurrentHash(this.destination.Span, out _);
         ushort crc2 = BinaryPrimitives.ReadUInt16BigEndian(this.destination.Span);

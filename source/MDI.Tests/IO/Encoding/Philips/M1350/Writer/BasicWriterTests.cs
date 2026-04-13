@@ -9,6 +9,8 @@ namespace MDI.Tests.IO.Encoding.Philips.M1350.Writer;
 [TestClass]
 public sealed class BasicWriterTests : IDisposable
 {
+    private static readonly byte[] KnownPayloadBytes = "Check this message!"u8.ToArray();
+
     private readonly ArrayBufferWriter<byte> output = new();
     private readonly DataBlockWriter subject;
 
@@ -26,7 +28,7 @@ public sealed class BasicWriterTests : IDisposable
     public void ShouldWriteIndividualBlocks()
     {
         this.subject.WriteStart();
-        this.subject.WriteData(Constants.KnownMessageBytes);
+        this.subject.WriteData(KnownPayloadBytes);
         this.subject.WriteEnd();
         this.subject.WriteCrc();
         this.subject.Flush();
@@ -47,7 +49,7 @@ public sealed class BasicWriterTests : IDisposable
         byte[] framed =
         [
             .. DataBlockConstants.StartBlock,
-            .. Constants.KnownMessageBytes,
+            .. KnownPayloadBytes,
             .. DataBlockConstants.EndBlock,
         ];
 
@@ -60,7 +62,7 @@ public sealed class BasicWriterTests : IDisposable
     [TestMethod]
     public void ShouldWriteExampleMessage()
     {
-        this.subject.WriteMessage(Constants.KnownMessageBytes);
+        this.subject.WriteMessage(KnownPayloadBytes);
         this.subject.Flush();
 
         Assert.IsTrue(this.output.WrittenCount > 0);
@@ -81,7 +83,7 @@ public sealed class BasicWriterTests : IDisposable
         byte[] framed =
         [
             .. DataBlockConstants.StartBlock,
-            .. Constants.KnownMessageBytes,
+            .. KnownPayloadBytes,
             .. DataBlockConstants.EndBlock,
         ];
 
@@ -94,13 +96,13 @@ public sealed class BasicWriterTests : IDisposable
     [TestMethod]
     public void ShouldWriteCrcForFramedBytes()
     {
-        this.subject.WriteMessage(Constants.KnownMessageBytes);
+        this.subject.WriteMessage(KnownPayloadBytes);
         this.subject.Flush();
 
         byte[] framed =
         [
             .. DataBlockConstants.StartBlock,
-            .. Constants.KnownMessageBytes,
+            .. KnownPayloadBytes,
             .. DataBlockConstants.EndBlock,
         ];
 
