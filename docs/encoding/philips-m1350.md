@@ -11,6 +11,13 @@ The implementation is currently the only device-specific encoding supported by M
 - Read and write support via `DataBlockReader` and `DataBlockWriter`
 - Optional validation skipping for writer performance tuning
 
+## Current scope
+
+This implementation currently covers the Data Link Layer only.
+
+- Implemented: block framing, escaping, CRC generation/validation, and stream parsing primitives.
+- Not implemented here: Application Layer message semantics and field-level parsing for block types such as `C`, `I`, `N`, `F`, etc.
+
 ## Namespace
 
 The implementation lives under:
@@ -44,7 +51,7 @@ The Philips M1350 writer and reader use a shared CRC algorithm:
 - `CRC-16/XMODEM`
 - big-endian output
 
-The reader verifies a block by expecting the final two CRC bytes to produce a zero residue when appended to the decoded payload.
+The reader verifies a block by expecting zero residue over the full framed wire sequence (`DLE STX`, escaped payload bytes, `DLE ETX`, and the two CRC bytes).
 
 ## API contract
 
@@ -71,20 +78,23 @@ stateDiagram-v2
 direction LR
 
     [*] --> None
-    None --> Escape: DLE
+    None --> StartEscape: DLE
     None --> None: other byte
 
-    Escape --> Data: STX
-    Escape --> None: ETX + CRC valid
-    Escape --> None: ETX + CRC invalid
+    StartEscape --> Data: STX
+    StartEscape --> None: other byte
 
     Data --> Data: normal byte
     Data --> Data: DLE DLE (escaped DLE)
-    Data --> Escape: DLE + non-DLE
+    Data --> DataEscape: DLE + non-DLE
 
-    note right of Escape
-      After a DLE, the reader expects either STX or ETX.
-      ETX triggers CRC validation on the block.
+    DataEscape --> Data: STX (interrupt + restart)
+    DataEscape --> None: ETX + CRC valid/invalid
+    DataEscape --> None: other byte
+
+    note right of DataEscape
+      ETX finalizes and validates only after a valid start.
+      CRC validation is performed on framed wire bytes.
     end note
 
 :::
