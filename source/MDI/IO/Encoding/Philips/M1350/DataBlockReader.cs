@@ -22,7 +22,6 @@ public static class DataBlockReader
         SequencePosition dataPosition = default;
         SequencePosition endPosition = default;
 
-        Span<byte> expectedCrc = stackalloc byte[sizeof(ushort)];
         Span<byte> actualCrc = stackalloc byte[sizeof(ushort)];
 
         while (!reader.End)
@@ -35,22 +34,39 @@ public static class DataBlockReader
             {
                 case (State.None, DataBlockConstants.DLE):
                     escapePosition = lastPosition;
-                    state = State.Escape;
+                    state = State.StartEscape;
                     break;
 
                 case (State.None, _):
                     break;
 
-                case (State.Escape, DataBlockConstants.STX):
+                case (State.StartEscape, DataBlockConstants.STX):
                     startPosition = escapePosition;
                     dataPosition = reader.Position;
                     state = State.Data;
                     break;
 
-                case (State.Escape, DataBlockConstants.ETX):
+                case (State.StartEscape, _):
+                    state = State.None;
+                    break;
+
+                case (State.Data, DataBlockConstants.DLE):
+                    if (reader.IsNext(DataBlockConstants.DLE, advancePast: true))
+                    {
+                        break;
+                    }
+
+                    escapePosition = lastPosition;
+                    state = State.DataEscape;
+                    break;
+
+                case (State.Data, _):
+                    break;
+
+                case (State.DataEscape, DataBlockConstants.ETX):
                     endPosition = escapePosition;
 
-                    if (!reader.TryRead(out expectedCrc[0]) || !reader.TryRead(out expectedCrc[1]))
+                    if (!reader.TryRead(out _) || !reader.TryRead(out _))
                     {
                         break;
                     }
@@ -74,17 +90,15 @@ public static class DataBlockReader
                     state = State.None;
                     break;
 
-                case (State.Data, DataBlockConstants.DLE):
-                    if (reader.IsNext(DataBlockConstants.DLE, advancePast: true))
-                    {
-                        break;
-                    }
-
-                    escapePosition = lastPosition;
-                    state = State.Escape;
+                case (State.DataEscape, DataBlockConstants.STX):
+                    // A new start marker interrupts the current incomplete block.
+                    startPosition = escapePosition;
+                    dataPosition = reader.Position;
+                    state = State.Data;
                     break;
 
-                case (State.Data, _):
+                case (State.DataEscape, _):
+                    state = State.None;
                     break;
 
                 default:
@@ -93,9 +107,14 @@ public static class DataBlockReader
         }
 
         block = default;
-        buffer = state == State.None
-            ? buffer.Slice(reader.Position)
-            : buffer.Slice(startPosition);
+        buffer = state switch
+        {
+            State.None => buffer.Slice(reader.Position),
+            State.StartEscape => buffer.Slice(escapePosition),
+            State.Data => buffer.Slice(startPosition),
+            State.DataEscape => buffer.Slice(startPosition),
+            _ => throw new InvalidOperationException("Unexpected reader state."),
+        };
 
         return false;
     }
@@ -105,18 +124,18 @@ public static class DataBlockReader
         None = 0,
 
         /// <summary>
-        /// Read the end of block.
+        /// Read a DLE while scanning for the start block.
         /// </summary>
-        CRC,
+        StartEscape,
 
         /// <summary>
-        /// Read the start of block.
+        /// Read block data.
         /// </summary>
         Data,
 
         /// <summary>
-        /// Read a DLE byte.
+        /// Read a DLE while inside a block.
         /// </summary>
-        Escape,
+        DataEscape,
     }
 }

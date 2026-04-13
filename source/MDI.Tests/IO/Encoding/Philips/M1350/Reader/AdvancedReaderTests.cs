@@ -1,6 +1,7 @@
 using System.Buffers;
 
 using MDI.IO.Encoding.Philips.M1350;
+using MDI.IO.Hashing;
 
 namespace MDI.Tests.IO.Encoding.Philips.M1350.Reader;
 
@@ -33,6 +34,24 @@ public sealed class AdvancedReaderTests : IDisposable
         this.writer.Flush();
 
         Check(this.output.WrittenMemory, 0, 12);
+    }
+
+    [TestMethod]
+    public void DleEtxWithoutStartShouldNotBeAcceptedAsBlock()
+    {
+        byte[] prefix = DataBlockConstants.EndBlock.ToArray();
+        byte[] crc = Crc16.Hash(prefix);
+        byte[] data =
+        [
+            .. prefix,
+            .. crc,
+        ];
+
+        ReadOnlySequence<byte> buffer = new(data);
+
+        bool result = DataBlockReader.TryRead(ref buffer, out _);
+
+        Assert.IsFalse(result);
     }
 
     private static void Check(ReadOnlyMemory<byte> memory, int expectedBlockCount = 0, int expectedBufferLength = 0)
