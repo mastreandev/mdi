@@ -57,12 +57,12 @@ public static class DataBlockReader
 
                     block = buffer.Slice(dataPosition, endPosition);
 
-                    foreach (ReadOnlyMemory<byte> memory in block)
+                    ReadOnlySequence<byte> frameWithCrc = buffer.Slice(startPosition, reader.Position);
+
+                    foreach (ReadOnlyMemory<byte> memory in frameWithCrc)
                     {
                         crc.Append(memory.Span);
                     }
-
-                    crc.Append(expectedCrc);
                     _ = crc.TryGetHashAndReset(actualCrc, out _);
 
                     if (BinaryPrimitives.ReadUInt16BigEndian(actualCrc) == 0)

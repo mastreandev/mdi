@@ -149,8 +149,12 @@ public sealed class DataBlockWriter : IDisposable
             throw new InvalidOperationException("Cannot interrupt in the CRC bytes.");
         }
 
+        // A new start marker begins a new CRC window for this frame.
+        this.crc16.Reset();
         this.WriteOutput(DataBlockConstants.StartBlock);
+        this.crc16.Append(DataBlockConstants.StartBlock);
         this.isStarted = true;
+        this.isEnded = false;
     }
 
     /// <summary>
@@ -164,6 +168,7 @@ public sealed class DataBlockWriter : IDisposable
         }
 
         this.WriteOutput(DataBlockConstants.EndBlock);
+        this.crc16.Append(DataBlockConstants.EndBlock);
         this.isEnded = true;
     }
 

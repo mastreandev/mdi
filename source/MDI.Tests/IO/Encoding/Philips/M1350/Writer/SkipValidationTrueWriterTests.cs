@@ -1,6 +1,7 @@
 using System.Buffers;
 
 using MDI.IO.Encoding.Philips.M1350;
+using MDI.IO.Hashing;
 
 namespace MDI.Tests.IO.Encoding.Philips.M1350.Writer;
 
@@ -43,11 +44,12 @@ public sealed class SkipValidationTrueWriterTests : IDisposable
         this.subject.WriteCrc();
         this.subject.Flush();
 
+        byte[] crc = Crc16.Hash(DataBlockConstants.EndBlock);
+
         byte[] expected =
         [
             .. DataBlockConstants.EndBlock,
-            0x00,
-            0x00,
+            .. crc,
         ];
 
         CollectionAssert.AreEqual(expected, this.output.WrittenSpan.ToArray());
@@ -62,12 +64,18 @@ public sealed class SkipValidationTrueWriterTests : IDisposable
         this.subject.WriteCrc();
         this.subject.Flush();
 
-        byte[] expected =
+        byte[] frame =
         [
             .. DataBlockConstants.StartBlock,
             .. DataBlockConstants.EndBlock,
-            0x00,
-            0x00,
+        ];
+
+        byte[] crc = Crc16.Hash(frame);
+
+        byte[] expected =
+        [
+            .. frame,
+            .. crc,
         ];
 
         CollectionAssert.AreEqual(expected, this.output.WrittenSpan.ToArray());
@@ -82,11 +90,12 @@ public sealed class SkipValidationTrueWriterTests : IDisposable
         this.subject.WriteCrc();
         this.subject.Flush();
 
+        byte[] crc = Crc16.Hash(DataBlockConstants.StartBlock);
+
         byte[] expected =
         [
             .. DataBlockConstants.StartBlock,
-            0x00,
-            0x00,
+            .. crc,
         ];
 
         CollectionAssert.AreEqual(expected, this.output.WrittenSpan.ToArray());

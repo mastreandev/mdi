@@ -43,7 +43,18 @@ public sealed class BasicWriterTests : IDisposable
 
         ReadOnlySpan<byte> crcBytes = this.output.WrittenSpan[^2..];
         ushort crcValue = BinaryPrimitives.ReadUInt16BigEndian(crcBytes);
-        Assert.AreEqual(Constants.KnownMessageCrc, crcValue);
+
+        byte[] framed =
+        [
+            .. DataBlockConstants.StartBlock,
+            .. Constants.KnownMessageBytes,
+            .. DataBlockConstants.EndBlock,
+        ];
+
+        byte[] expectedCrcBytes = Crc16.Hash(framed);
+        ushort expectedCrc = BinaryPrimitives.ReadUInt16BigEndian(expectedCrcBytes);
+
+        Assert.AreEqual(expectedCrc, crcValue);
     }
 
     [TestMethod]
@@ -66,7 +77,18 @@ public sealed class BasicWriterTests : IDisposable
 
         ReadOnlySpan<byte> crcBytes = this.output.WrittenSpan[^2..];
         ushort crcValue = BinaryPrimitives.ReadUInt16BigEndian(crcBytes);
-        Assert.AreEqual(Constants.KnownMessageCrc, crcValue);
+
+        byte[] framed =
+        [
+            .. DataBlockConstants.StartBlock,
+            .. Constants.KnownMessageBytes,
+            .. DataBlockConstants.EndBlock,
+        ];
+
+        byte[] expectedCrcBytes = Crc16.Hash(framed);
+        ushort expectedCrc = BinaryPrimitives.ReadUInt16BigEndian(expectedCrcBytes);
+
+        Assert.AreEqual(expectedCrc, crcValue);
     }
 
     [TestMethod]
