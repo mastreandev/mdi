@@ -23,6 +23,17 @@ public sealed class Crc16Tests
     }
 
     [TestMethod]
+    public void HashStandardCheckVector()
+    {
+        byte[] source = "123456789"u8.ToArray();
+        byte[] destination = Crc16.Hash(source);
+
+        ushort crc = BinaryPrimitives.ReadUInt16BigEndian(destination);
+
+        Assert.AreEqual(0x31c3, crc);
+    }
+
+    [TestMethod]
     public void HashSpan()
     {
         ReadOnlySpan<byte> source = Constants.KnownMessageBytes;
