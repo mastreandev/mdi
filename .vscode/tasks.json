@@ -1,0 +1,133 @@
+{
+  // See https://go.microsoft.com/fwlink/?LinkId=733558
+  // for the documentation about the tasks.json format
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "dotnet: clean",
+      "command": "dotnet",
+      "type": "shell",
+      "args": [
+        "clean"
+      ],
+      "presentation": {
+        "reveal": "silent"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "dotnet: build",
+      "command": "dotnet",
+      "type": "shell",
+      "args": [
+        "build",
+        "/binaryLogger",
+        "/property:GenerateFullPaths=true",
+        "/consoleloggerparameters:NoSummary"
+      ],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "presentation": {
+        "reveal": "silent"
+      },
+      "problemMatcher": "$msCompile"
+    },
+    {
+      "label": "dotnet: test",
+      "command": "dotnet",
+      "type": "shell",
+      "args": [
+        "test",
+        "--no-restore",
+        "--verbosity",
+        "normal"
+      ],
+      "group": {
+        "kind": "test",
+        "isDefault": true
+      },
+      "presentation": {
+        "reveal": "silent"
+      },
+      "problemMatcher": "$msCompile"
+    },
+    {
+      "label": "dotnet: rebuild",
+      "dependsOrder": "sequence",
+      "dependsOn": [
+        "dotnet: clean",
+        "dotnet: build"
+      ],
+      "problemMatcher": []
+    },
+    {
+      "label": "dotnet: format",
+      "command": "dotnet",
+      "type": "shell",
+      "args": [
+        "format",
+        "--no-restore",
+        "--verbosity",
+        "diagnostic"
+      ],
+      "presentation": {
+        "reveal": "silent"
+      },
+      "problemMatcher": "$msCompile"
+    },
+    {
+      "label": "dotnet: reformat",
+      "dependsOrder": "sequence",
+      "dependsOn": [
+        "dotnet: clean",
+        "dotnet: build",
+        "dotnet: format"
+      ],
+      "problemMatcher": []
+    },
+    {
+      "label": "dotnet: restore lock files",
+      "command": "dotnet",
+      "type": "shell",
+      "args": [
+        "restore",
+        "/property:GenerateFullPaths=true",
+        "/property:RestoreLockedMode=false",
+        "/consoleloggerparameters:NoSummary"
+      ],
+      "presentation": {
+        "reveal": "silent"
+      },
+      "problemMatcher": "$msCompile"
+    },
+    {
+      "label": "dotnet: benchmarks",
+      "command": "dotnet",
+      "type": "shell",
+      "args": [
+        "run",
+        "--project",
+        "source/MDI.Benchmarks/MDI.Benchmarks.csproj",
+        "--configuration",
+        "Release",
+        "--",
+        "--filter",
+        "${input:benchmarkFilter}"
+      ],
+      "presentation": {
+        "reveal": "silent"
+      },
+      "problemMatcher": []
+    }
+  ],
+  "inputs": [
+    {
+      "id": "benchmarkFilter",
+      "type": "promptString",
+      "description": "Enter BenchmarkDotNet filter (like *CrcBenchmark*)",
+      "default": "*"
+    }
+  ]
+}

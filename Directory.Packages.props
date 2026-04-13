@@ -1,0 +1,14 @@
+<Project>
+  <ItemGroup>
+    <!-- Microsoft -->
+    <PackageVersion Include="Microsoft.CodeAnalysis.BannedApiAnalyzers" Version="3.3.4" />
+    <PackageVersion Include="Microsoft.CodeAnalysis.PublicApiAnalyzers" Version="3.3.4" />
+    <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="10.0.105" />
+    <PackageVersion Include="Microsoft.VisualStudio.Threading.Analyzers" Version="17.14.15" />
+    <!-- System -->
+    <PackageVersion Include="System.IO.Hashing" Version="10.0.5" />
+    <!-- Other -->
+    <PackageVersion Include="BenchmarkDotNet" Version="0.15.8" />
+    <PackageVersion Include="ReferenceTrimmer" Version="3.4.7" />
+  </ItemGroup>
+</Project>

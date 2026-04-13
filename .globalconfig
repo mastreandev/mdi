@@ -1,0 +1,72 @@
+is_global = true
+
+# Public API analyzer
+dotnet_public_api_analyzer.require_api_files = true
+
+# CA1303: Do not pass literals as localized parameters
+dotnet_diagnostic.CA1303.severity = none # not applicable; intended for localized applications
+
+# CA1515: Consider making public types internal
+dotnet_diagnostic.CA1515.severity = none # known issue (https://github.com/dotnet/roslyn-analyzers/issues/7473)
+
+# CA1710: Identifiers should have correct suffix
+dotnet_code_quality.CA1710.additional_required_suffixes = T:System.Collections.Generic.IReadOnlyCollection`1->Collection|T:System.Collections.Generic.IList`1->List|T:System.Collections.Generic.IReadOnlyList`1->List|T:System.Collections.Generic.ISet`1->Set|T:System.Collections.Generic.IReadOnlySet`1->Set # known issue (https://github.com/dotnet/roslyn-analyzers/issues/5145)
+
+# CA1812: Avoid uninstantiated internal classes
+dotnet_diagnostic.CA1812.severity = none # known issue (https://github.com/dotnet/roslyn/issues/3545)
+
+# CA1852: Seal internal types
+dotnet_code_quality.CA1852.ignore_internalsvisibleto = true # not applicable; intended for testing, not extending types
+
+# CA2007: Do not directly await a Task
+dotnet_diagnostic.CA2007.severity = none # not applicable; intended for SynchronizationContext or TaskScheduler
+
+# CA2225: Operator overloads have named alternates
+dotnet_diagnostic.CA2225.severity = none # not applicable; intended for languages that do not support overloaded operators
+
+### Visual Studio Threading Rules ###
+
+# VSTHRD001: Avoid legacy thread switching methods
+dotnet_diagnostic.VSTHRD001.severity = none # not applicable; Visual Studio specific rule
+
+# VSTHRD003: Avoid awaiting foreign Tasks
+dotnet_diagnostic.VSTHRD003.severity = none # not applicable; Visual Studio specific rule
+
+# VSTHRD004: Await SwitchToMainThreadAsync
+dotnet_diagnostic.VSTHRD004.severity = none # not applicable; Visual Studio specific rule
+
+# VSTHRD010: Invoke single-threaded types on Main thread
+dotnet_diagnostic.VSTHRD010.severity = none # not applicable; Visual Studio specific rule
+
+# VSTHRD012: Provide JoinableTaskFactory where allowed
+dotnet_diagnostic.VSTHRD012.severity = none # not applicable; Visual Studio specific rule
+
+# VSTHRD102: Implement internal logic asynchronously
+dotnet_diagnostic.VSTHRD102.severity = none # not applicable; Visual Studio specific rule
+
+# VSTHRD104: Offer async option
+dotnet_diagnostic.VSTHRD104.severity = none # not applicable; Visual Studio specific rule
+
+# VSTHRD105: Avoid method overloads that assume TaskScheduler.Current
+dotnet_diagnostic.VSTHRD105.severity = none # not applicable; Visual Studio specific rule
+
+# VSTHRD106: Use InvokeAsync to raise async events
+dotnet_diagnostic.VSTHRD106.severity = none # not applicable; Visual Studio specific rule
+
+# VSTHRD108: Assert thread affinity unconditionally
+dotnet_diagnostic.VSTHRD108.severity = none # not applicable; Visual Studio specific rule
+
+# VSTHRD109: Switch instead of assert in async methods
+dotnet_diagnostic.VSTHRD109.severity = none # not applicable; Visual Studio specific rule
+
+# VSTHRD111: Use .ConfigureAwait(bool)
+dotnet_diagnostic.VSTHRD111.severity = none # not applicable; Visual Studio specific rule
+
+# VSTHRD112: Implement System.IAsyncDisposable
+dotnet_diagnostic.VSTHRD112.severity = none # not applicable; Visual Studio specific rule
+
+# VSTHRD113: Check for System.IAsyncDisposable
+dotnet_diagnostic.VSTHRD113.severity = none # not applicable; Visual Studio specific rule
+
+# VSTHRD115: Avoid creating a JoinableTaskContext with an explicit null SynchronizationContext
+dotnet_diagnostic.VSTHRD115.severity = none # not applicable; Visual Studio specific rule
