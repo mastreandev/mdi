@@ -2,6 +2,7 @@ using System.Buffers;
 using System.Buffers.Binary;
 
 using MDI.IO.Encoding.Philips.M1350;
+using MDI.IO.Hashing;
 
 namespace MDI.Tests.IO.Encoding.Philips.M1350.Writer;
 
@@ -66,6 +67,28 @@ public sealed class BasicWriterTests : IDisposable
         ReadOnlySpan<byte> crcBytes = this.output.WrittenSpan[^2..];
         ushort crcValue = BinaryPrimitives.ReadUInt16BigEndian(crcBytes);
         Assert.AreEqual(Constants.KnownMessageCrc, crcValue);
+    }
+
+    [TestMethod]
+    public void ShouldWriteCrcForFramedBytes()
+    {
+        this.subject.WriteMessage(Constants.KnownMessageBytes);
+        this.subject.Flush();
+
+        byte[] framed =
+        [
+            .. DataBlockConstants.StartBlock,
+            .. Constants.KnownMessageBytes,
+            .. DataBlockConstants.EndBlock,
+        ];
+
+        byte[] expectedCrcBytes = Crc16.Hash(framed);
+        ushort expectedCrc = BinaryPrimitives.ReadUInt16BigEndian(expectedCrcBytes);
+
+        ReadOnlySpan<byte> actualCrcBytes = this.output.WrittenSpan[^2..];
+        ushort actualCrc = BinaryPrimitives.ReadUInt16BigEndian(actualCrcBytes);
+
+        Assert.AreEqual(expectedCrc, actualCrc);
     }
 
     [TestMethod]
