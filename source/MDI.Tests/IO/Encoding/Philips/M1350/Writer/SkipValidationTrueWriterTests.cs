@@ -43,7 +43,14 @@ public sealed class SkipValidationTrueWriterTests : IDisposable
         this.subject.WriteCrc();
         this.subject.Flush();
 
-        Assert.IsTrue(this.output.WrittenSpan.Length > 0);
+        byte[] expected =
+        [
+            .. DataBlockConstants.EndBlock,
+            0x00,
+            0x00,
+        ];
+
+        CollectionAssert.AreEqual(expected, this.output.WrittenSpan.ToArray());
     }
 
     [TestMethod]
@@ -55,7 +62,15 @@ public sealed class SkipValidationTrueWriterTests : IDisposable
         this.subject.WriteCrc();
         this.subject.Flush();
 
-        Assert.IsTrue(this.output.WrittenSpan.Length > 0);
+        byte[] expected =
+        [
+            .. DataBlockConstants.StartBlock,
+            .. DataBlockConstants.EndBlock,
+            0x00,
+            0x00,
+        ];
+
+        CollectionAssert.AreEqual(expected, this.output.WrittenSpan.ToArray());
     }
 
     [TestMethod]
@@ -67,6 +82,13 @@ public sealed class SkipValidationTrueWriterTests : IDisposable
         this.subject.WriteCrc();
         this.subject.Flush();
 
-        Assert.IsTrue(this.output.WrittenSpan.Length > 0);
+        byte[] expected =
+        [
+            .. DataBlockConstants.StartBlock,
+            0x00,
+            0x00,
+        ];
+
+        CollectionAssert.AreEqual(expected, this.output.WrittenSpan.ToArray());
     }
 }

@@ -64,8 +64,15 @@ public sealed class SkipValidationFalseWriterTests : IDisposable
     {
         this.subject.WriteStart();
         this.subject.WriteStart();
+        this.subject.Flush();
 
-        // TODO: Assert?
+        byte[] expected =
+        [
+            .. DataBlockConstants.StartBlock,
+            .. DataBlockConstants.StartBlock,
+        ];
+
+        CollectionAssert.AreEqual(expected, this.output.WrittenSpan.ToArray());
     }
 
     [TestMethod]
@@ -74,8 +81,15 @@ public sealed class SkipValidationFalseWriterTests : IDisposable
         this.subject.WriteStart();
         this.subject.WriteData();
         this.subject.WriteStart();
+        this.subject.Flush();
 
-        // TODO: Assert?
+        byte[] expected =
+        [
+            .. DataBlockConstants.StartBlock,
+            .. DataBlockConstants.StartBlock,
+        ];
+
+        CollectionAssert.AreEqual(expected, this.output.WrittenSpan.ToArray());
     }
 
     [TestMethod]
