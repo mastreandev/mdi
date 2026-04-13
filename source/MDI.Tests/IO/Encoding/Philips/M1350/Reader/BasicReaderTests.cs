@@ -62,6 +62,23 @@ public sealed class BasicReaderTests : IDisposable
     }
 
     [TestMethod]
+    public void SingleEscapeBlockShouldReturnDecodedPayload()
+    {
+        this.writer.WriteStart();
+        this.writer.WriteData([DataBlockConstants.DLE]);
+        this.writer.WriteEnd();
+        this.writer.WriteCrc();
+        this.writer.Flush();
+
+        ReadOnlySequence<byte> buffer = new(this.output.WrittenMemory);
+
+        bool result = DataBlockReader.TryRead(ref buffer, out ReadOnlySequence<byte> block);
+
+        Assert.IsTrue(result);
+        CollectionAssert.AreEqual(new byte[] { DataBlockConstants.DLE }, block.ToArray());
+    }
+
+    [TestMethod]
     public void SingleBlockWithoutCrcShouldReturnBlockStart()
     {
         this.writer.WriteStart();

@@ -21,6 +21,7 @@ public static class DataBlockReader
         SequencePosition startPosition = default;
         SequencePosition dataPosition = default;
         SequencePosition endPosition = default;
+        bool escapedDleSeen = false;
 
         Span<byte> actualCrc = stackalloc byte[sizeof(ushort)];
 
@@ -43,16 +44,19 @@ public static class DataBlockReader
                 case (State.StartEscape, DataBlockConstants.STX):
                     startPosition = escapePosition;
                     dataPosition = reader.Position;
+                    escapedDleSeen = false;
                     state = State.Data;
                     break;
 
                 case (State.StartEscape, _):
+                    escapedDleSeen = false;
                     state = State.None;
                     break;
 
                 case (State.Data, DataBlockConstants.DLE):
                     if (reader.IsNext(DataBlockConstants.DLE, advancePast: true))
                     {
+                        escapedDleSeen = true;
                         break;
                     }
 
@@ -71,7 +75,10 @@ public static class DataBlockReader
                         break;
                     }
 
-                    block = buffer.Slice(dataPosition, endPosition);
+                    ReadOnlySequence<byte> rawBlock = buffer.Slice(dataPosition, endPosition);
+                    block = escapedDleSeen
+                        ? DecodeEscapedPayload(rawBlock)
+                        : rawBlock;
 
                     ReadOnlySequence<byte> frameWithCrc = buffer.Slice(startPosition, reader.Position);
 
@@ -87,6 +94,7 @@ public static class DataBlockReader
                         return true;
                     }
 
+                    escapedDleSeen = false;
                     state = State.None;
                     break;
 
@@ -94,10 +102,12 @@ public static class DataBlockReader
                     // A new start marker interrupts the current incomplete block.
                     startPosition = escapePosition;
                     dataPosition = reader.Position;
+                    escapedDleSeen = false;
                     state = State.Data;
                     break;
 
                 case (State.DataEscape, _):
+                    escapedDleSeen = false;
                     state = State.None;
                     break;
 
@@ -117,6 +127,39 @@ public static class DataBlockReader
         };
 
         return false;
+    }
+
+    private static ReadOnlySequence<byte> DecodeEscapedPayload(ReadOnlySequence<byte> source)
+    {
+        SequenceReader<byte> reader = new(source);
+
+        int escapedCount = 0;
+        while (reader.TryRead(out byte b))
+        {
+            if (b == DataBlockConstants.DLE && reader.IsNext(DataBlockConstants.DLE, advancePast: true))
+            {
+                escapedCount++;
+            }
+        }
+
+        int decodedLength = checked((int)source.Length - escapedCount);
+        byte[] decoded = new byte[decodedLength];
+
+        reader = new(source);
+
+        int index = 0;
+        while (reader.TryRead(out byte b))
+        {
+            if (b == DataBlockConstants.DLE && reader.IsNext(DataBlockConstants.DLE, advancePast: true))
+            {
+                decoded[index++] = DataBlockConstants.DLE;
+                continue;
+            }
+
+            decoded[index++] = b;
+        }
+
+        return new ReadOnlySequence<byte>(decoded);
     }
 
     private enum State
