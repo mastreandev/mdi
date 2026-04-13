@@ -1,0 +1,7 @@
+<Solution>
+  <Folder Name="/source/">
+    <Project Path="source/MDI.Benchmarks/MDI.Benchmarks.csproj" />
+    <Project Path="source/MDI.Tests/MDI.Tests.csproj" />
+    <Project Path="source/MDI/MDI.csproj" />
+  </Folder>
+</Solution>

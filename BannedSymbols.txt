@@ -1,0 +1,242 @@
+//
+// System.Console
+//
+// Banned the legacy console write methods. Most libraries and services should
+// use an `ILogger<T>`. Console programs (and command-line handlers) should use
+// the stream-specific properties, like `Console.Out`, and the async variations
+// when possible.
+//
+M:System.Console.Write(System.Int32);Use ILogger<TCategoryName>.
+M:System.Console.Write(System.Int64);Use ILogger<TCategoryName>.
+M:System.Console.Write(System.UInt32);Use ILogger<TCategoryName>.
+M:System.Console.Write(System.UInt64);Use ILogger<TCategoryName>.
+M:System.Console.Write(System.Boolean);Use ILogger<TCategoryName>.
+M:System.Console.Write(System.Char);Use ILogger<TCategoryName>.
+M:System.Console.Write(System.Char[]);Use ILogger<TCategoryName>.
+M:System.Console.Write(System.Char[],System.Int32,System.Int32);Use ILogger<TCategoryName>.
+M:System.Console.Write(System.Single);Use ILogger<TCategoryName>.
+M:System.Console.Write(System.Double);Use ILogger<TCategoryName>.
+M:System.Console.Write(System.Object);Use ILogger<TCategoryName>.
+M:System.Console.Write(System.String);Use ILogger<TCategoryName>.
+M:System.Console.Write(System.String,System.Object);Use ILogger<TCategoryName>.
+M:System.Console.Write(System.String,System.Object,System.Object);Use ILogger<TCategoryName>.
+M:System.Console.Write(System.String,System.Object,System.Object,System.Object);Use ILogger<TCategoryName>.
+M:System.Console.Write(System.String,System.Object[]);Use ILogger<TCategoryName>.
+M:System.Console.Write(System.Decimal);Use ILogger<TCategoryName>.
+
+M:System.Console.WriteLine;Use ILogger<TCategoryName>.
+M:System.Console.WriteLine(System.Int32);Use ILogger<TCategoryName>.
+M:System.Console.WriteLine(System.Int64);Use ILogger<TCategoryName>.
+M:System.Console.WriteLine(System.UInt32);Use ILogger<TCategoryName>.
+M:System.Console.WriteLine(System.UInt64);Use ILogger<TCategoryName>.
+M:System.Console.WriteLine(System.Boolean);Use ILogger<TCategoryName>.
+M:System.Console.WriteLine(System.Char);Use ILogger<TCategoryName>.
+M:System.Console.WriteLine(System.Char[]);Use ILogger<TCategoryName>.
+M:System.Console.WriteLine(System.Char[],System.Int32,System.Int32);Use ILogger<TCategoryName>.
+M:System.Console.WriteLine(System.Single);Use ILogger<TCategoryName>.
+M:System.Console.WriteLine(System.Double);Use ILogger<TCategoryName>.
+M:System.Console.WriteLine(System.Object);Use ILogger<TCategoryName>.
+M:System.Console.WriteLine(System.String);Use ILogger<TCategoryName>.
+M:System.Console.WriteLine(System.String,System.Object);Use ILogger<TCategoryName>.
+M:System.Console.WriteLine(System.String,System.Object,System.Object);Use ILogger<TCategoryName>.
+M:System.Console.WriteLine(System.String,System.Object,System.Object,System.Object);Use ILogger<TCategoryName>.
+M:System.Console.WriteLine(System.String,System.Object[]);Use ILogger<TCategoryName>.
+M:System.Console.WriteLine(System.Decimal);Use ILogger<TCategoryName>.
+
+//
+// System.DateTime
+//
+// Banned members that encourage use of local time.
+//
+F:System.DateTime.MaxValue;Use a nullable type to represent an unknown or missing value.
+F:System.DateTime.MinValue;Use a nullable type to represent an unknown or missing value.
+
+P:System.DateTime.Now;Use DateTimeOffset.UtcNow.
+P:System.DateTime.UtcNow;Use DateTimeOffset.UtcNow.
+
+//
+// System.DateTimeOffset
+//
+// Banned members that encourage use of local time.
+//
+P:System.DateTimeOffset.DateTime;Do not convert between DateTimeOffset and DateTime.
+P:System.DateTimeOffset.LocalDateTime;Do not convert between DateTimeOffset and DateTime.
+P:System.DateTimeOffset.UtcDateTime;Do not convert between DateTimeOffset and DateTime.
+
+M:System.DateTimeOffset.op_Implicit(System.DateTime)~System.DateTimeOffset;Do not convert between DateTimeOffset and DateTime, which may result in an unexpected UTC offset.
+
+//
+// System.DBNull
+//
+// Banned DBNull and associated members
+//
+T:System.DBNull;Use allowed IsDBNull method(s)
+F:System.DBNull.Value;Use allowed IsDBNull method(s)
+
+//
+// System.Diagnostics.{Debug,Trace}
+//
+// Banned because these methods are not effective in modern applications.
+//
+T:System.Diagnostics.Debug;Perform unconditional nullability & invariant analysis or an API design review
+T:System.Diagnostics.Trace;Perform unconditional nullability & invariant analysis or an API design review
+
+//
+// System.Net.Mail
+//
+// Banned in accordance with the official remarks:
+//
+// https://learn.microsoft.com/en-us/dotnet/api/system.net.mail.smtpclient#remarks
+//
+N:System.Net.Mail
+
+T:System.Net.Mail.SmtpClient
+T:System.Net.Mail.MailMessage
+
+//
+// System.Security.Cryptography
+//
+// Banned to prevent accidental use of cryptographic APIs without proper
+// security design review. Use of encryption, hashing, or other cryptographic
+// operations requires explicit approval.
+//
+// Suppress warnings only after security design review and approval.
+//
+
+// Symmetric encryption algorithms
+T:System.Security.Cryptography.Aes;Use of cryptographic APIs requires security design review. Suppress only after approval.
+T:System.Security.Cryptography.AesCryptoServiceProvider;Use of cryptographic APIs requires security design review. Suppress only after approval.
+T:System.Security.Cryptography.AesManaged;Use of cryptographic APIs requires security design review. Suppress only after approval.
+T:System.Security.Cryptography.DES;Use of cryptographic APIs requires security design review. Suppress only after approval.
+T:System.Security.Cryptography.DESCryptoServiceProvider;Use of cryptographic APIs requires security design review. Suppress only after approval.
+T:System.Security.Cryptography.TripleDES;Use of cryptographic APIs requires security design review. Suppress only after approval.
+T:System.Security.Cryptography.TripleDESCryptoServiceProvider;Use of cryptographic APIs requires security design review. Suppress only after approval.
+T:System.Security.Cryptography.RC2;Use of cryptographic APIs requires security design review. Suppress only after approval.
+T:System.Security.Cryptography.RC2CryptoServiceProvider;Use of cryptographic APIs requires security design review. Suppress only after approval.
+
+// Asymmetric encryption algorithms
+T:System.Security.Cryptography.RSA;Use of cryptographic APIs requires security design review. Suppress only after approval.
+T:System.Security.Cryptography.RSACryptoServiceProvider;Use of cryptographic APIs requires security design review. Suppress only after approval.
+T:System.Security.Cryptography.RSACng;Use of cryptographic APIs requires security design review. Suppress only after approval.
+T:System.Security.Cryptography.DSA;Use of cryptographic APIs requires security design review. Suppress only after approval.
+T:System.Security.Cryptography.DSACryptoServiceProvider;Use of cryptographic APIs requires security design review. Suppress only after approval.
+T:System.Security.Cryptography.DSACng;Use of cryptographic APIs requires security design review. Suppress only after approval.
+T:System.Security.Cryptography.ECDsa;Use of cryptographic APIs requires security design review. Suppress only after approval.
+T:System.Security.Cryptography.ECDsaCng;Use of cryptographic APIs requires security design review. Suppress only after approval.
+T:System.Security.Cryptography.ECDiffieHellman;Use of cryptographic APIs requires security design review. Suppress only after approval.
+T:System.Security.Cryptography.ECDiffieHellmanCng;Use of cryptographic APIs requires security design review. Suppress only after approval.
+
+// HMAC and MAC algorithms
+T:System.Security.Cryptography.HMAC;Use of cryptographic APIs requires security design review. Suppress only after approval.
+T:System.Security.Cryptography.HMACMD5;Use of cryptographic APIs requires security design review. Suppress only after approval.
+T:System.Security.Cryptography.HMACSHA1;Use of cryptographic APIs requires security design review. Suppress only after approval.
+T:System.Security.Cryptography.HMACSHA256;Use of cryptographic APIs requires security design review. Suppress only after approval.
+T:System.Security.Cryptography.HMACSHA384;Use of cryptographic APIs requires security design review. Suppress only after approval.
+T:System.Security.Cryptography.HMACSHA512;Use of cryptographic APIs requires security design review. Suppress only after approval.
+
+// Hash algorithms
+T:System.Security.Cryptography.MD5;Use of cryptographic APIs requires security design review. Suppress only after approval.
+T:System.Security.Cryptography.MD5CryptoServiceProvider;Use of cryptographic APIs requires security design review. Suppress only after approval.
+T:System.Security.Cryptography.SHA1;Use of cryptographic APIs requires security design review. Suppress only after approval.
+T:System.Security.Cryptography.SHA1Managed;Use of cryptographic APIs requires security design review. Suppress only after approval.
+T:System.Security.Cryptography.SHA1CryptoServiceProvider;Use of cryptographic APIs requires security design review. Suppress only after approval.
+T:System.Security.Cryptography.SHA256;Use of cryptographic APIs requires security design review. Suppress only after approval.
+T:System.Security.Cryptography.SHA256Managed;Use of cryptographic APIs requires security design review. Suppress only after approval.
+T:System.Security.Cryptography.SHA256CryptoServiceProvider;Use of cryptographic APIs requires security design review. Suppress only after approval.
+T:System.Security.Cryptography.SHA384;Use of cryptographic APIs requires security design review. Suppress only after approval.
+T:System.Security.Cryptography.SHA384Managed;Use of cryptographic APIs requires security design review. Suppress only after approval.
+T:System.Security.Cryptography.SHA384CryptoServiceProvider;Use of cryptographic APIs requires security design review. Suppress only after approval.
+T:System.Security.Cryptography.SHA512;Use of cryptographic APIs requires security design review. Suppress only after approval.
+T:System.Security.Cryptography.SHA512Managed;Use of cryptographic APIs requires security design review. Suppress only after approval.
+T:System.Security.Cryptography.SHA512CryptoServiceProvider;Use of cryptographic APIs requires security design review. Suppress only after approval.
+
+// Random number generation
+T:System.Security.Cryptography.RandomNumberGenerator;Use of cryptographic APIs requires security design review. Suppress only after approval.
+T:System.Security.Cryptography.RNGCryptoServiceProvider;Use of cryptographic APIs requires security design review. Suppress only after approval.
+
+// Key derivation
+T:System.Security.Cryptography.Rfc2898DeriveBytes;Use of cryptographic APIs requires security design review. Suppress only after approval.
+T:System.Security.Cryptography.PasswordDeriveBytes;Use of cryptographic APIs requires security design review. Suppress only after approval.
+
+// Base cryptographic types
+T:System.Security.Cryptography.SymmetricAlgorithm;Use of cryptographic APIs requires security design review. Suppress only after approval.
+T:System.Security.Cryptography.AsymmetricAlgorithm;Use of cryptographic APIs requires security design review. Suppress only after approval.
+T:System.Security.Cryptography.HashAlgorithm;Use of cryptographic APIs requires security design review. Suppress only after approval.
+T:System.Security.Cryptography.KeyedHashAlgorithm;Use of cryptographic APIs requires security design review. Suppress only after approval.
+
+// Cryptographic operations
+T:System.Security.Cryptography.ICryptoTransform;Use of cryptographic APIs requires security design review. Suppress only after approval.
+T:System.Security.Cryptography.CryptoStream;Use of cryptographic APIs requires security design review. Suppress only after approval.
+
+//
+// System.String
+//
+// The empty string literal "" is an inlineable const, while string.Empty is a
+// static readonly field. This is mostly for code consistency.
+//
+F:System.String.Empty;Use the empty string literal ""
+
+//
+// System.Type (Reflection APIs)
+//
+// Banned runtime reflection APIs for reliability and performance. String-based lookups are error-prone, and enumerating members at runtime impacts performance. Prefer compile-time alternatives like source generators, expression trees, or direct member access.
+//
+M:System.Type.GetProperty(System.String);Avoid reflection for reliability and performance.
+M:System.Type.GetProperty(System.String,System.Reflection.BindingFlags);Avoid reflection for reliability and performance.
+M:System.Type.GetProperty(System.String,System.Type);Avoid reflection for reliability and performance.
+M:System.Type.GetProperty(System.String,System.Type[]);Avoid reflection for reliability and performance.
+M:System.Type.GetProperty(System.String,System.Type,System.Type[]);Avoid reflection for reliability and performance.
+M:System.Type.GetProperty(System.String,System.Type,System.Type[],System.Reflection.ParameterModifier[]);Avoid reflection for reliability and performance.
+M:System.Type.GetProperty(System.String,System.Reflection.BindingFlags,System.Reflection.Binder,System.Type,System.Type[],System.Reflection.ParameterModifier[]);Avoid reflection for reliability and performance.
+M:System.Type.GetProperties;Avoid reflection for reliability and performance.
+M:System.Type.GetProperties(System.Reflection.BindingFlags);Avoid reflection for reliability and performance.
+
+M:System.Type.GetMethod(System.String);Avoid reflection for reliability and performance.
+M:System.Type.GetMethod(System.String,System.Reflection.BindingFlags);Avoid reflection for reliability and performance.
+M:System.Type.GetMethod(System.String,System.Type[]);Avoid reflection for reliability and performance.
+M:System.Type.GetMethod(System.String,System.Type[],System.Reflection.ParameterModifier[]);Avoid reflection for reliability and performance.
+M:System.Type.GetMethod(System.String,System.Reflection.BindingFlags,System.Reflection.Binder,System.Type[],System.Reflection.ParameterModifier[]);Avoid reflection for reliability and performance.
+M:System.Type.GetMethod(System.String,System.Reflection.BindingFlags,System.Reflection.Binder,System.Reflection.CallingConventions,System.Type[],System.Reflection.ParameterModifier[]);Avoid reflection for reliability and performance.
+M:System.Type.GetMethod(System.String,System.Int32,System.Type[]);Avoid reflection for reliability and performance.
+M:System.Type.GetMethod(System.String,System.Int32,System.Type[],System.Reflection.ParameterModifier[]);Avoid reflection for reliability and performance.
+M:System.Type.GetMethod(System.String,System.Int32,System.Reflection.BindingFlags,System.Reflection.Binder,System.Type[],System.Reflection.ParameterModifier[]);Avoid reflection for reliability and performance.
+M:System.Type.GetMethod(System.String,System.Int32,System.Reflection.BindingFlags,System.Reflection.Binder,System.Reflection.CallingConventions,System.Type[],System.Reflection.ParameterModifier[]);Avoid reflection for reliability and performance.
+M:System.Type.GetMethods;Avoid reflection for reliability and performance.
+M:System.Type.GetMethods(System.Reflection.BindingFlags);Avoid reflection for reliability and performance.
+
+M:System.Type.GetField(System.String);Avoid reflection for reliability and performance.
+M:System.Type.GetField(System.String,System.Reflection.BindingFlags);Avoid reflection for reliability and performance.
+M:System.Type.GetFields;Avoid reflection for reliability and performance.
+M:System.Type.GetFields(System.Reflection.BindingFlags);Avoid reflection for reliability and performance.
+
+M:System.Type.GetMember(System.String);Avoid reflection for reliability and performance.
+M:System.Type.GetMember(System.String,System.Reflection.BindingFlags);Avoid reflection for reliability and performance.
+M:System.Type.GetMember(System.String,System.Reflection.MemberTypes,System.Reflection.BindingFlags);Avoid reflection for reliability and performance.
+M:System.Type.GetMembers;Avoid reflection for reliability and performance.
+M:System.Type.GetMembers(System.Reflection.BindingFlags);Avoid reflection for reliability and performance.
+
+M:System.Type.GetEvent(System.String);Avoid reflection for reliability and performance.
+M:System.Type.GetEvent(System.String,System.Reflection.BindingFlags);Avoid reflection for reliability and performance.
+M:System.Type.GetEvents;Avoid reflection for reliability and performance.
+M:System.Type.GetEvents(System.Reflection.BindingFlags);Avoid reflection for reliability and performance.
+
+M:System.Type.GetConstructor(System.Type[]);Avoid reflection for reliability and performance.
+M:System.Type.GetConstructor(System.Reflection.BindingFlags,System.Reflection.Binder,System.Type[],System.Reflection.ParameterModifier[]);Avoid reflection for reliability and performance.
+M:System.Type.GetConstructor(System.Reflection.BindingFlags,System.Reflection.Binder,System.Reflection.CallingConventions,System.Type[],System.Reflection.ParameterModifier[]);Avoid reflection for reliability and performance.
+M:System.Type.GetConstructors;Avoid reflection for reliability and performance.
+M:System.Type.GetConstructors(System.Reflection.BindingFlags);Avoid reflection for reliability and performance.
+
+M:System.Type.GetNestedType(System.String);Avoid reflection for reliability and performance.
+M:System.Type.GetNestedType(System.String,System.Reflection.BindingFlags);Avoid reflection for reliability and performance.
+M:System.Type.GetNestedTypes;Avoid reflection for reliability and performance.
+M:System.Type.GetNestedTypes(System.Reflection.BindingFlags);Avoid reflection for reliability and performance.
+
+M:System.Type.GetInterface(System.String);Avoid reflection for reliability and performance.
+M:System.Type.GetInterface(System.String,System.Boolean);Avoid reflection for reliability and performance.
+M:System.Type.GetInterfaces;Avoid reflection for reliability and performance.
+
+M:System.Type.GetDefaultMembers;Avoid reflection for reliability and performance.
+
+M:System.Type.InvokeMember(System.String,System.Reflection.BindingFlags,System.Reflection.Binder,System.Object,System.Object[]);Avoid reflection for reliability and performance.
+M:System.Type.InvokeMember(System.String,System.Reflection.BindingFlags,System.Reflection.Binder,System.Object,System.Object[],System.Globalization.CultureInfo);Avoid reflection for reliability and performance.
+M:System.Type.InvokeMember(System.String,System.Reflection.BindingFlags,System.Reflection.Binder,System.Object,System.Object[],System.Reflection.ParameterModifier[],System.Globalization.CultureInfo,System.String[]);Avoid reflection for reliability and performance.
