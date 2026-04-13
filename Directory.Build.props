@@ -1,0 +1,108 @@
+<Project>
+  <!-- See https://aka.ms/dotnet/msbuild/customize for more details on customizing your build -->
+
+  <PropertyGroup>
+    <!-- Common -->
+    <WorkspaceDir>$(MSBuildThisFileDirectory)</WorkspaceDir>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <!-- Descriptive -->
+    <!-- https://learn.microsoft.com/en-us/dotnet/core/project-sdk/msbuild-props#descriptive-properties -->
+    <Authors>Anthony Mastrean</Authors>
+    <Company>Mastrean Development Limited</Company>
+    <Copyright>© $(Company) $([System.DateTime]::Now.ToString(yyyy))</Copyright>
+    <Version>0.0.0</Version>
+    <InformationalVersion>0.0.0-dev.0+deadbeef</InformationalVersion>
+    <IncludeSourceRevisionInInformationalVersion>False</IncludeSourceRevisionInInformationalVersion>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <!-- Build -->
+    <!-- https://learn.microsoft.com/en-us/dotnet/core/project-sdk/msbuild-props#build-related-properties -->
+    <ContinuousIntegrationBuild Condition="'$(CI)' == 'true'">true</ContinuousIntegrationBuild>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <!-- Source link -->
+    <!-- https://github.com/dotnet/sourcelink -->
+    <DebugType>embedded</DebugType>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <!-- Generated file -->
+    <!-- https://learn.microsoft.com/en-us/dotnet/core/project-sdk/msbuild-props#generated-file-properties -->
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <!-- Run-related -->
+    <!-- https://learn.microsoft.com/en-us/dotnet/core/project-sdk/msbuild-props#run-related-properties -->
+    <RunWorkingDirectory>$(MSBuildProjectDirectory)</RunWorkingDirectory>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <!-- Assembly validation -->
+    <!-- https://learn.microsoft.com/en-us/dotnet/core/project-sdk/msbuild-props#assembly-validation-properties -->
+    <NoWarn>$(NoWarn);CS1591</NoWarn>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <!-- Code analysis -->
+    <!-- https://learn.microsoft.com/en-us/dotnet/core/project-sdk/msbuild-props#code-analysis-properties -->
+    <AnalysisLevel>latest-All</AnalysisLevel>
+    <AnalysisLevelStyle>All</AnalysisLevelStyle>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    <TreatWarningsAsErrors Condition="'$(ContinuousIntegrationBuild)' == 'true'">true</TreatWarningsAsErrors>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <!-- Artifacts -->
+    <!-- https://learn.microsoft.com/en-us/dotnet/core/sdk/artifacts-output -->
+    <UseArtifactsOutput>true</UseArtifactsOutput>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <!-- NuGet -->
+    <!-- https://learn.microsoft.com/en-us/nuget/consume-packages/central-package-management -->
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+    <CentralPackageVersionOverrideEnabled Condition="'$(UsingMSTestSdk)' != 'true'">false</CentralPackageVersionOverrideEnabled> <!-- known issue https://github.com/microsoft/testfx/issues/7441 -->
+    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+    <RestoreLockedMode>true</RestoreLockedMode>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- https://github.com/dotnet/roslyn/blob/main/docs/features/source-generators.cookbook.md#consume-msbuild-properties-and-metadata -->
+    <CompilerVisibleProperty Include="ProjectDir" />
+    <CompilerVisibleProperty Include="RootNamespace" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Code analysis -->
+    <PackageReference Include="Microsoft.CodeAnalysis.BannedApiAnalyzers"
+      IncludeAssets="runtime; build; native; contentfiles; analyzers; buildtransitive"
+      PrivateAssets="all" />
+    <PackageReference Include="Microsoft.CodeAnalysis.PublicApiAnalyzers"
+      IncludeAssets="runtime; build; native; contentfiles; analyzers; buildtransitive"
+      PrivateAssets="all" />
+    <PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers"
+      IncludeAssets="runtime; build; native; contentfiles; analyzers; buildtransitive"
+      PrivateAssets="all" />
+    <PackageReference Include="ReferenceTrimmer"
+      IncludeAssets="runtime; build; native; contentfiles; analyzers; buildtransitive"
+      PrivateAssets="all" />
+    <!-- Source link -->
+    <PackageReference Include="Microsoft.SourceLink.GitHub"
+      PrivateAssets="all" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Banned API analyzer -->
+    <AdditionalFiles Include="$(WorkspaceDir)BannedSymbols.txt" />
+  </ItemGroup>
+
+</Project>
