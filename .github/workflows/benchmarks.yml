@@ -1,0 +1,66 @@
+# Run BenchmarkDotNet benchmarks on demand and upload an HTML report artifact.
+
+name: Benchmarks
+
+on:
+  workflow_dispatch:
+    inputs:
+      filter:
+        description: "BenchmarkDotNet filter (e.g. *CrcBenchmark*)"
+        default: "*"
+        required: false
+        type: string
+
+concurrency:
+  group: benchmarks
+  cancel-in-progress: false
+
+jobs:
+  benchmark:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+
+      - name: Cache NuGet packages
+        uses: actions/cache@6f8efc29b200d32929f49075959781ed54ec270c # v3
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json', '**/*.csproj') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@c2fa09f4bde5ebb9d1777cf28262a3eb3db3ced7 # v5
+        with:
+          global-json-file: global.json
+
+      - name: Restore local tools
+        run: dotnet tool restore
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build --no-restore --configuration Release
+
+      - name: Run benchmarks
+        run: |
+          dotnet run \
+            --project source/MDI.Benchmarks/MDI.Benchmarks.csproj \
+            --configuration Release \
+            --no-build \
+            -- \
+            --filter '${{ inputs.filter }}' \
+            --exporters html \
+            --artifacts '${{ github.workspace }}/source/MDI.Benchmarks/BenchmarkDotNet.Artifacts'
+
+          find source/MDI.Benchmarks/BenchmarkDotNet.Artifacts/results -maxdepth 1 -name '*.html' -print
+
+      - name: Upload benchmark results
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: benchmark-results
+          path: source/MDI.Benchmarks/BenchmarkDotNet.Artifacts/results/
