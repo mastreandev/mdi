@@ -20,9 +20,9 @@ This section documents Philips M1350 data block encoding and decoding support in
 
 ## Current scope
 
-- **Implemented:** block framing, DLE escaping, CRC generation and validation, stream parsing primitives (`DataBlockReader`, `DataBlockWriter`), application-layer support for `C`, `F`, `I`, `MM`, `N`, `P`, `S`, `T`, `G`, `H`, `?`, and `V`, host-originated note encoding for `N`, and an initial synchronous session-layer slice for routing, request writing, and revision-negotiation validation
-- **In progress:** expanding session orchestration from the current synchronous facade into richer request/response helpers and the planned async API
-- **Planned:** broader async session API and richer session orchestration above the current synchronous facade
+- **Implemented:** block framing, DLE escaping, CRC generation and validation, stream parsing primitives (`DataBlockReader`, `DataBlockWriter`), application-layer support for `C`, `F`, `I`, `MM`, `N`, `P`, `S`, `T`, `G`, `H`, `?`, and `V`, host-originated note encoding for `N`, the complete synchronous session facade for the currently implemented block set, and the first async session slice centered on `PipeReader`, `IDuplexPipe`, and stream entry points, `IAsyncEnumerable<M1350Message>` output, async request/workflow methods, and flush-aware async command writes
+- **In progress:** any higher-level orchestration above the current pipe-based async session API
+- **Planned:** additional higher-level workflow helpers if repeated transport/session patterns emerge
 
 ## Namespaces
 
@@ -42,3 +42,4 @@ This section documents Philips M1350 data block encoding and decoding support in
 - [Data Link Layer](data-link-layer.md)
 - [Application Layer](application-layer.md)
 - [Session Layer](session-layer.md)
+- [Simulator and FM Origination](simulator-and-fm-origination.md)

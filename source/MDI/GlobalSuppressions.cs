@@ -11,3 +11,21 @@ using System.Diagnostics.CodeAnalysis;
     Scope = "type",
     Target = "~T:MDI.Philips.M1350.Application.CTG.HrMode"
 )]
+
+[assembly: SuppressMessage("Maintainability", "CA1508: Avoid dead conditional code",
+    Justification = "Known issue: https://github.com/dotnet/roslyn-analyzers/issues/7164",
+    Scope = "member",
+    Target = "~M:MDI.Philips.M1350.M1350Session.ReadIdentityAsync(System.Threading.CancellationToken)"
+)]
+
+[assembly: SuppressMessage("Maintainability", "CA1508: Avoid dead conditional code",
+    Justification = "Known issue: https://github.com/dotnet/roslyn-analyzers/issues/7164",
+    Scope = "member",
+    Target = "~M:MDI.Philips.M1350.M1350Session.ReadCtgAsync(System.Threading.CancellationToken)"
+)]
+
+[assembly: SuppressMessage("Maintainability", "CA1508: Avoid dead conditional code",
+    Justification = "Known issue: https://github.com/dotnet/roslyn-analyzers/issues/7164",
+    Scope = "member",
+    Target = "~M:MDI.Philips.M1350.M1350Session.ReadNegotiatedIdentityAsync(System.String,System.Threading.CancellationToken)"
+)]
