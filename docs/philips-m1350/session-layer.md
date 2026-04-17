@@ -23,7 +23,7 @@ initial async transport-facing slice is implemented as well:
 The broader async/session API described below is now implemented in its first slice, including
 `IDuplexPipe` and `Stream` convenience entry points. The remaining planned work is broader
 orchestration that sits above the current `PipeReader`-based core. See
-[Monitor Layer Sketch](monitor-layer.md).
+[Monitor Layer](monitor-layer.md).
 
 ## Position in the stack
 

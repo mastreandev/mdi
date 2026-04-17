@@ -16,13 +16,14 @@ This section documents Philips M1350 data block encoding and decoding support in
 - Initial session-layer routing via `M1350MessageReader`
 - Initial framed command writing via `M1350CommandWriter`, including `G` and `H` auto-send control
 - Initial synchronous session facade via `M1350Session`
+- Initial monitor orchestration via `M1350Monitor`
 - Protocol revision comparison and negotiated identity validation via `ProtocolRevision`
 
 ## Current scope
 
 - **Implemented:** block framing, DLE escaping, CRC generation and validation, stream parsing primitives (`DataBlockReader`, `DataBlockWriter`), application-layer support for `C`, `F`, `I`, `MM`, `N`, `P`, `S`, `T`, `G`, `H`, `?`, and `V`, host-originated note encoding for `N`, the complete synchronous session facade for the currently implemented block set, and the first async session slice centered on `PipeReader`, `IDuplexPipe`, and stream entry points, `IAsyncEnumerable<M1350Message>` output, async request/workflow methods, and flush-aware async command writes
-- **In progress:** any higher-level orchestration above the current pipe-based async session API
-- **Planned:** additional higher-level workflow helpers if repeated transport/session patterns emerge
+- **Implemented:** `M1350Monitor` as the higher-level monitor facade above the current pipe-based session API, including startup orchestration, a background receive loop, a retained snapshot, and an async update stream for inbound and monitor-owned state transitions
+- **Planned:** additional higher-level workflow helpers only if repeated transport or session orchestration patterns still prove necessary
 
 ## Namespaces
 
@@ -42,4 +43,6 @@ This section documents Philips M1350 data block encoding and decoding support in
 - [Data Link Layer](data-link-layer.md)
 - [Application Layer](application-layer.md)
 - [Session Layer](session-layer.md)
+- [Monitor Layer](monitor-layer.md)
+- [Monitor Integration Shapes](monitor-integration-shapes.md)
 - [Simulator and FM Origination](simulator-and-fm-origination.md)

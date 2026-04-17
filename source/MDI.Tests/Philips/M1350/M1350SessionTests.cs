@@ -9,6 +9,8 @@ namespace MDI.Tests.Philips.M1350;
 [TestClass]
 public sealed partial class M1350SessionTests
 {
+    public TestContext TestContext { get; set; } = null!;
+
     private static void AssertPayload(ref ReadOnlySequence<byte> buffer, byte[] expectedPayload)
     {
         bool result = DataBlockReader.TryRead(ref buffer, out ReadOnlySequence<byte> payload);
@@ -17,7 +19,7 @@ public sealed partial class M1350SessionTests
         CollectionAssert.AreEqual(expectedPayload, payload.ToArray());
     }
 
-    private static async Task WriteInputAsync(PipeWriter writer, params byte[][] payloads)
+    private static async Task WriteInputAsync(PipeWriter writer, CancellationToken cancellationToken = default, params byte[][] payloads)
     {
         ArrayBufferWriter<byte> output = new();
 
@@ -27,7 +29,7 @@ public sealed partial class M1350SessionTests
             dataBlockWriter.WriteMessage(payload);
         }
 
-        await writer.WriteAsync(output.WrittenMemory);
+        await writer.WriteAsync(output.WrittenMemory, cancellationToken);
         await writer.CompleteAsync();
     }
 
