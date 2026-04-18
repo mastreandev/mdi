@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <ProjectReference Include="$(WorkspaceDir)\source\MDI\MDI.csproj" />
+    <ProjectReference Include="$(WorkspaceDir)\source\MDI.Philips.M1350.Simulator\MDI.Philips.M1350.Simulator.csproj" />
   </ItemGroup>
 
 </Project>

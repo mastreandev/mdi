@@ -94,6 +94,63 @@ If a simulator layer is introduced, it would likely own some or all of the follo
 
 That is a coherent capability set. It is also distinct from the host command API.
 
+## Current executable host
+
+The simulator now also has a runnable executable entrypoint in
+`source/MDI.Philips.M1350.Simulator`.
+
+Its current transport shape is intentionally minimal:
+
+1. it reads framed host commands from standard input
+2. it writes framed monitor output to standard output
+3. it supports a small startup profile through command-line options for identity, CTG baseline,
+   scenario selection, auto-send interval, and whether to emit the unsolicited power-on identity
+   block
+
+This keeps the first host implementation reusable and scriptable while leaving room for a later
+TUI or richer scenario runner on top of the same simulator engine.
+
+## Current scenario direction
+
+The simulator now has a small set of deterministic CTG scenarios rather than a single hard-coded
+waveform profile.
+
+The current intent is:
+
+1. `baseline` for a stable normal trace
+2. `fhr-rise` for a synthetic fetal-heart-rate rise profile
+3. `fhr-drop` for a synthetic fetal-heart-rate drop profile
+4. `toco-rise` for a synthetic toco-rise profile with modest HR response
+
+These profiles are still synthetic, but they avoid implying clinical interpretation while still
+providing a better development surface for host-side testing than repeating one fixed CTG block
+forever.
+
+## Replay capture boundary
+
+If the library grows a compact replay/export path for real fetal-monitor traffic, the best capture
+boundary is the parsed message stream exposed by `M1350Session.ReadAllAsync(...)`, not the raw
+data-link layer and not the retained-state `M1350Monitor` snapshot layer.
+
+Why that layer:
+
+1. raw framed blocks are faithful, but too transport-specific and noisy for compact reusable replay
+2. `M1350Monitor` snapshots collapse time and overwrite repeated values, so they lose the ordered
+   transition stream needed for replay
+3. `M1350Session` already exposes the ordered typed inbound stream before state retention or policy
+   decisions are applied
+
+That suggests a compact replay record shaped roughly as:
+
+1. protocol/session metadata such as negotiated revision and timing origin
+2. an ordered sequence of `(delta-from-previous, typed message payload)` entries
+3. optional export adapters that rehydrate those entries into simulator scenarios or exact message
+   playback streams
+
+So the monitor library should likely capture at the session/message layer, and the simulator should
+later consume that capture format rather than inventing a second replay abstraction above monitor
+snapshots.
+
 ## Short-term guidance
 
 Until simulator support is a real goal, keep monitor-originated payload construction as test-only
