@@ -6,20 +6,9 @@ design, test vector strategy, and API shape.
 
 ## Scope
 
-This page currently covers:
-
-- the CTG (`C`) block parser/encoder
-- the event marker (`MM`) block parser
-- the note (`N`) block parser
-- the failure (`F`) block parser
-- the identity (`I`) block parser
-- the maternal non-invasive blood pressure (`P`) block parser
-- the maternal temperature (`T`) block parser
-- the maternal oxygen saturation (`S`) block parser
-- the minimal host-originated control payload encoders needed to drive identity and revision
-  negotiation (`G`, `H`, `?`, and `V`)
-
-Other block types are listed in the routing table in [Session Layer](session-layer.md).
+This page covers the currently implemented application-layer payload formats plus the minimal
+host-originated control payload encoders used for identity, CTG, and revision negotiation.
+For block routing and directionality, see [Session Layer](session-layer.md).
 
 Application-layer processing assumes the data link layer has already:
 
@@ -473,64 +462,3 @@ Reference anchors:
 | Toco raw 128 (= 64 toco units)    | —         | `0x80`   | `Toco = 0x80`                      |
 | FSpO2 = 98%                       | —         | `0x62`   | `FSpO2 = 98`                       |
 | All-zero status word              | `0x00`    | `0x00`   | All flags false                    |
-
-## Source files
-
-```
-source/MDI/Philips/M1350/Application/CTG/
-    SignalQuality.cs
-    FmpValue.cs
-    HrMode.cs
-    TocoMode.cs
-    HeartRateSample.cs
-    FhrSample.cs
-    CtgStatusWord.cs
-    CtgBlock.cs
-    CtgBlockParser.cs
-    CtgBlockEncoder.cs
-
-source/MDI.Tests/Philips/M1350/Application/CTG/
-    CtgStatusWordTests.cs
-    CtgBlockParserTests.cs
-    CtgBlockEncoderTests.cs
-
-source/MDI/Philips/M1350/Application/
-    RequestBlockEncoder.cs
-    ProtocolRevisionChangeRequestEncoder.cs
-
-source/MDI/Philips/M1350/Application/Identity/
-    IdBlock.cs
-    IdBlockParser.cs
-
-source/MDI/Philips/M1350/Application/Nibp/
-    NibpBlock.cs
-    NibpBlockParser.cs
-
-source/MDI/Philips/M1350/Application/Temperature/
-    TemperatureBlock.cs
-    TemperatureBlockParser.cs
-
-source/MDI/Philips/M1350/Application/SpO2/
-    SpO2Block.cs
-    SpO2BlockParser.cs
-
-source/MDI.Tests/Philips/M1350/Application/
-    RequestBlockEncoderTests.cs
-    ProtocolRevisionChangeRequestEncoderTests.cs
-
-source/MDI.Tests/Philips/M1350/Application/Identity/
-    IdBlockParserTests.cs
-
-source/MDI.Tests/Philips/M1350/Application/Nibp/
-    NibpBlockParserTests.cs
-
-source/MDI.Tests/Philips/M1350/Application/Temperature/
-    TemperatureBlockParserTests.cs
-
-source/MDI.Tests/Philips/M1350/Application/SpO2/
-    SpO2BlockParserTests.cs
-```
-
-## Namespace
-
-`MDI.Philips.M1350.Application.CTG`

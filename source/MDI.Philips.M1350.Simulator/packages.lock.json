@@ -46,7 +46,7 @@
         "resolved": "10.0.105",
         "contentHash": "qDNxxeM6uuvh1F/KuKjlY8pg+HMQv95FqK6DHVabHxX0vix/PMl4l/CII2XL3tZr0afj0sbqk3WXa/2unyz0PQ=="
       },
-      "mdi": {
+      "mdi.philips.m1350": {
         "type": "Project",
         "dependencies": {
           "System.IO.Hashing": "[10.0.5, )"

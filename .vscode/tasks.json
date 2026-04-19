@@ -109,7 +109,7 @@
       "args": [
         "run",
         "--project",
-        "source/MDI.Benchmarks/MDI.Benchmarks.csproj",
+        "source/MDI.Philips.M1350.Benchmarks/MDI.Philips.M1350.Benchmarks.csproj",
         "--configuration",
         "Release",
         "--",

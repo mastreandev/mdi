@@ -49,18 +49,18 @@ jobs:
       - name: Run benchmarks
         run: |
           dotnet run \
-            --project source/MDI.Benchmarks/MDI.Benchmarks.csproj \
+            --project source/MDI.Philips.M1350.Benchmarks/MDI.Philips.M1350.Benchmarks.csproj \
             --configuration Release \
             --no-build \
             -- \
             --filter '${{ inputs.filter }}' \
             --exporters html \
-            --artifacts '${{ github.workspace }}/source/MDI.Benchmarks/BenchmarkDotNet.Artifacts'
+            --artifacts '${{ github.workspace }}/source/MDI.Philips.M1350.Benchmarks/BenchmarkDotNet.Artifacts'
 
-          find source/MDI.Benchmarks/BenchmarkDotNet.Artifacts/results -maxdepth 1 -name '*.html' -print
+          find source/MDI.Philips.M1350.Benchmarks/BenchmarkDotNet.Artifacts/results -maxdepth 1 -name '*.html' -print
 
       - name: Upload benchmark results
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: benchmark-results
-          path: source/MDI.Benchmarks/BenchmarkDotNet.Artifacts/results/
+          path: source/MDI.Philips.M1350.Benchmarks/BenchmarkDotNet.Artifacts/results/

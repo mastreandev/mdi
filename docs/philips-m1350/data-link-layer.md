@@ -67,6 +67,7 @@ Operational validation pattern:
 - compute CRC over framed block bytes including transmitted CRC and expect zero residue
 
 In this repository, the implementation aligns with CRC-16/XMODEM conventions used by the Philips M1350 codec.
+See [Hashing / CRC-16-XMODEM](hashing/crc16-xmodem.md) for the parameter set and external references.
 
 ## Notes for MDI implementation
 
