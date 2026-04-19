@@ -138,7 +138,7 @@ public sealed partial class M1350SessionTests
     }
 
     [TestMethod]
-    public void TryReadEventMessageShouldSkipIdentityMessages()
+    public void TryReadEventMarkerShouldSkipIdentityMessages()
     {
         ArrayBufferWriter<byte> output = new();
 
@@ -154,7 +154,7 @@ public sealed partial class M1350SessionTests
 
         ReadOnlySequence<byte> buffer = new(output.WrittenMemory);
 
-        bool result = M1350Session.TryReadEventMessage(ref buffer, out EventMessageBlock block);
+        bool result = M1350Session.TryReadEventMarker(ref buffer, out EventMessageBlock block);
 
         Assert.IsTrue(result);
         Assert.AreEqual(new EventMessageBlock(), block);

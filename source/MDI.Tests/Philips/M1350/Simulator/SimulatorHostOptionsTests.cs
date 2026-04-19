@@ -15,6 +15,7 @@ public sealed class SimulatorHostOptionsTests
         Assert.IsFalse(result.ShowUsage);
         Assert.IsNull(result.ErrorMessage);
         Assert.IsNotNull(result.Options);
+        Assert.IsNull(result.Options.ReplayPath);
         Assert.AreEqual("M1350A", result.Options.IdCode);
         Assert.AreEqual("A20", result.Options.ProtocolRevision);
         Assert.AreEqual(M1350CtgScenario.Baseline, result.Options.Scenario);
@@ -103,6 +104,38 @@ public sealed class SimulatorHostOptionsTests
         Assert.AreEqual(
             "Identity fields must be fixed-width ASCII values: id-code=6, protocol-revision=3, software-revision=7, serial-number=10.",
             result.ErrorMessage);
+        Assert.IsNull(result.Options);
+    }
+
+    [TestMethod]
+    public void ParseShouldAcceptReplayPathWhenFileExists()
+    {
+        string replayPath = Path.GetTempFileName();
+
+        try
+        {
+            SimulatorHostParseResult result = SimulatorHostOptions.Parse(["--replay", replayPath]);
+
+            Assert.IsFalse(result.ShowUsage);
+            Assert.IsNull(result.ErrorMessage);
+            Assert.IsNotNull(result.Options);
+            Assert.AreEqual(replayPath, result.Options.ReplayPath);
+        }
+        finally
+        {
+            File.Delete(replayPath);
+        }
+    }
+
+    [TestMethod]
+    public void ParseShouldRejectMissingReplayFile()
+    {
+        string replayPath = Path.Combine(Path.GetTempPath(), $"mdi-missing-{Guid.NewGuid():N}.ndjson");
+
+        SimulatorHostParseResult result = SimulatorHostOptions.Parse(["--replay", replayPath]);
+
+        Assert.IsTrue(result.ShowUsage);
+        Assert.AreEqual($"Replay file '{replayPath}' was not found.", result.ErrorMessage);
         Assert.IsNull(result.Options);
     }
 

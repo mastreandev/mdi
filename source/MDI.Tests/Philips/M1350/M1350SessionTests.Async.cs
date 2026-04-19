@@ -29,6 +29,11 @@ public sealed partial class M1350SessionTests
         Assert.HasCount(2, messages);
         Assert.IsInstanceOfType<IdMessage>(messages[0]);
         Assert.IsInstanceOfType<NoteMessage>(messages[1]);
+        Assert.AreEqual(M1350MessageDirection.Inbound, messages[0].Direction);
+        Assert.AreEqual(M1350MessageDirection.Inbound, messages[1].Direction);
+        Assert.IsNotNull(messages[0].ReceivedOffset);
+        Assert.IsNotNull(messages[1].ReceivedOffset);
+        Assert.IsGreaterThanOrEqualTo(messages[0].ReceivedOffset!.Value, messages[1].ReceivedOffset!.Value);
     }
 
     [TestMethod]

@@ -45,4 +45,6 @@ This section documents Philips M1350 data block encoding and decoding support in
 - [Session Layer](session-layer.md)
 - [Monitor Layer](monitor-layer.md)
 - [Monitor Integration Shapes](monitor-integration-shapes.md)
+- [Replay Capture Shapes](replay-capture-shapes.md)
+- [Replay Instrumentation](replay-instrumentation.md)
 - [Simulator and FM Origination](simulator-and-fm-origination.md)

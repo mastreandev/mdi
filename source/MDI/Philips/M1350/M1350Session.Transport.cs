@@ -1,4 +1,5 @@
 using System.Buffers;
+using System.Diagnostics;
 using System.IO.Pipelines;
 using System.Runtime.CompilerServices;
 
@@ -13,13 +14,15 @@ public sealed partial class M1350Session
         [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
         this.EnterAsyncReadScope();
+        long startTimestamp = Stopwatch.GetTimestamp();
 
         try
         {
-            // Keep the pattern-matching loop condition; CA1508 can report a false positive here.
             while (await this.TryReadNextAsync(cancellationToken).ConfigureAwait(false) is { } message)
             {
-                yield return message;
+                yield return message.WithObservation(
+                    Stopwatch.GetElapsedTime(startTimestamp),
+                    M1350MessageDirection.Inbound);
             }
         }
         finally

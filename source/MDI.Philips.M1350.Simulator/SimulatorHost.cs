@@ -1,5 +1,7 @@
 using System.IO.Pipelines;
 
+using MDI.Philips.M1350.Replay;
+
 namespace MDI.Philips.M1350.Simulator;
 
 internal static class SimulatorHost
@@ -26,10 +28,17 @@ internal static class SimulatorHost
 
         try
         {
-            input = PipeReader.Create(Console.OpenStandardInput());
             output = PipeWriter.Create(Console.OpenStandardOutput());
 
             SimulatorHostOptions options = parseResult.Options!;
+
+            if (options.ReplayPath is not null)
+            {
+                await RunReplayAsync(options.ReplayPath, output, stoppingSource.Token).ConfigureAwait(false);
+                return 0;
+            }
+
+            input = PipeReader.Create(Console.OpenStandardInput());
             using M1350FmSimulator simulator = new(
                 input,
                 output,
@@ -71,6 +80,37 @@ internal static class SimulatorHost
         }
     }
 
+    private static async Task RunReplayAsync(string replayPath, PipeWriter output, CancellationToken cancellationToken)
+    {
+        await using FileStream input = File.OpenRead(replayPath);
+        M1350RecordedMessageReplay replay = await M1350MessageReplay.ReadNdjsonAsync(input, cancellationToken).ConfigureAwait(false);
+
+        await RunReplayLoopAsync(replay, output, cancellationToken).ConfigureAwait(false);
+    }
+
+    internal static async Task RunReplayLoopAsync(
+        M1350RecordedMessageReplay replay,
+        PipeWriter output,
+        CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(replay);
+        ArgumentNullException.ThrowIfNull(output);
+
+        while (true)
+        {
+            await foreach (M1350Message message in M1350MessageReplay.PlaybackAsync(replay, cancellationToken: cancellationToken).ConfigureAwait(false))
+            {
+                M1350FmWriter.WriteMessage(output, message);
+
+                FlushResult flushResult = await output.FlushAsync(cancellationToken).ConfigureAwait(false);
+                if (flushResult.IsCanceled)
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+                }
+            }
+        }
+    }
+
     private static async Task WriteUsageAsync(TextWriter writer, string? errorMessage)
     {
         if (errorMessage is not null)
@@ -97,6 +137,7 @@ internal static class SimulatorHost
             "  --toco <0-255>                    Default: 20",
             "  --fspo2 <0-255>                   Default: 98",
             "  --auto-send-interval-ms <value>   Default: 1000",
+            "  --replay <path>                   Loop an NDJSON message stream to standard output.",
             "  --no-power-on-identity            Suppress the initial unsolicited identity block.",
             "  -h|--help|/?                      Show this usage text.",
         ];

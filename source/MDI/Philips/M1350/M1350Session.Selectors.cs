@@ -113,13 +113,13 @@ public sealed partial class M1350Session
     /// Attempts to read the next event marker block from the framed input buffer,
     /// skipping other supported message types.
     /// </summary>
-    public static bool TryReadEventMessage(ref ReadOnlySequence<byte> buffer, out EventMessageBlock block)
+    public static bool TryReadEventMarker(ref ReadOnlySequence<byte> buffer, out EventMessageBlock block)
     {
         while (M1350MessageReader.TryRead(ref buffer, out M1350Message message))
         {
-            if (message is EventMarkerMessage eventMessage)
+            if (message is EventMarkerMessage eventMarker)
             {
-                block = eventMessage.Block;
+                block = eventMarker.Block;
                 return true;
             }
         }

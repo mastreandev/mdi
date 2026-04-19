@@ -7,6 +7,7 @@ using M1350ProtocolRevision = MDI.Philips.M1350.ProtocolRevision;
 namespace MDI.Philips.M1350.Simulator;
 
 internal sealed record class SimulatorHostOptions(
+    string? ReplayPath,
     string IdCode,
     string ProtocolRevision,
     string SoftwareRevision,
@@ -24,6 +25,7 @@ internal sealed record class SimulatorHostOptions(
 
     public static SimulatorHostParseResult Parse(IReadOnlyList<string> args)
     {
+        string? replayPath = null;
         string idCode = "M1350A";
         string protocolRevision = "A20";
         string softwareRevision = "A.03.00";
@@ -158,12 +160,21 @@ internal sealed record class SimulatorHostOptions(
                     emitPowerOnIdentity = false;
                     break;
 
+                case "--replay":
+                    if (!TryReadStringValue(args, ref index, optionName, inlineValue, out replayPath, out string? replayPathError))
+                    {
+                        return SimulatorHostParseResult.Error(replayPathError!);
+                    }
+
+                    break;
+
                 default:
                     return SimulatorHostParseResult.Error($"Unknown option '{token}'.");
             }
         }
 
         SimulatorHostOptions options = new(
+            replayPath,
             idCode,
             protocolRevision,
             softwareRevision,
@@ -365,6 +376,12 @@ internal sealed record class SimulatorHostOptions(
 
     private static bool Validate(SimulatorHostOptions options, out string? error)
     {
+        if (options.ReplayPath is not null && !File.Exists(options.ReplayPath))
+        {
+            error = $"Replay file '{options.ReplayPath}' was not found.";
+            return false;
+        }
+
         if (!M1350ProtocolRevision.TryParse(options.ProtocolRevision.AsSpan(), out _))
         {
             error = "Protocol revision must be a 3-character ASCII token, for example A20.";

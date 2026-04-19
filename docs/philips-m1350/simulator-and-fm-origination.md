@@ -132,6 +132,12 @@ If the library grows a compact replay/export path for real fetal-monitor traffic
 boundary is the parsed message stream exposed by `M1350Session.ReadAllAsync(...)`, not the raw
 data-link layer and not the retained-state `M1350Monitor` snapshot layer.
 
+For a fuller compare/contrast between message-layer capture, framed-block capture, and raw-byte
+capture, see [Replay Capture Shapes](replay-capture-shapes.md).
+
+For observability and OTEL-specific notes around replay capture and playback, see
+[Replay Instrumentation](replay-instrumentation.md).
+
 Why that layer:
 
 1. raw framed blocks are faithful, but too transport-specific and noisy for compact reusable replay

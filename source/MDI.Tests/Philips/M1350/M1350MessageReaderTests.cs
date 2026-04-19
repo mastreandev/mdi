@@ -21,6 +21,9 @@ public sealed class M1350MessageReaderTests
         Assert.IsTrue(message is IdMessage);
 
         IdMessage idMessage = (IdMessage)message;
+        Assert.AreEqual((byte)'I', idMessage.TypeByte);
+        Assert.AreEqual(M1350MessageDirection.Inbound, idMessage.Direction);
+        Assert.IsNull(idMessage.ReceivedOffset);
         Assert.AreEqual("M1350A", idMessage.Block.IdCode);
         Assert.AreEqual("A20", idMessage.Block.ProtocolRevision);
         Assert.AreEqual("A.03.00", idMessage.Block.SoftwareRevision);
@@ -89,6 +92,7 @@ public sealed class M1350MessageReaderTests
         Assert.IsTrue(message is FailureMessage);
 
         FailureMessage failureMessage = (FailureMessage)message;
+        Assert.AreEqual((byte)'F', failureMessage.TypeByte);
         Assert.AreEqual("503", failureMessage.Block.ErrorCode);
     }
 

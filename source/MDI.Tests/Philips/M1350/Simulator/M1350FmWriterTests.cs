@@ -3,7 +3,9 @@ using System.IO.Pipelines;
 
 using MDI.Philips.M1350;
 using MDI.Philips.M1350.Application.CTG;
+using MDI.Philips.M1350.Application.Failure;
 using MDI.Philips.M1350.Application.Identity;
+using MDI.Philips.M1350.Application.Notes;
 using MDI.Philips.M1350.DataLink;
 using MDI.Philips.M1350.Simulator;
 
@@ -80,6 +82,47 @@ public sealed class M1350FmWriterTests
 
         Assert.AreEqual(expected, block);
         AssertRequestPayload(output.WrittenMemory, "?C"u8.ToArray());
+    }
+
+    [TestMethod]
+    public void WriteMessageShouldProduceFramedNoteReadableByMessageReader()
+    {
+        ArrayBufferWriter<byte> output = new();
+        NoteMessage expected = new(new NoteBlock("PC", "OK"));
+
+        M1350FmWriter.WriteMessage(output, expected);
+
+        ReadOnlySequence<byte> buffer = new(output.WrittenMemory);
+        bool result = M1350MessageReader.TryRead(ref buffer, out M1350Message message);
+
+        Assert.IsTrue(result);
+        Assert.IsInstanceOfType<NoteMessage>(message);
+        Assert.AreEqual(expected.Block, ((NoteMessage)message).Block);
+    }
+
+    [TestMethod]
+    public void WriteMessageShouldProduceFramedFailureReadableByMessageReader()
+    {
+        ArrayBufferWriter<byte> output = new();
+        FailureMessage expected = new(new FailureBlock("004"));
+
+        M1350FmWriter.WriteMessage(output, expected);
+
+        ReadOnlySequence<byte> buffer = new(output.WrittenMemory);
+        bool result = M1350MessageReader.TryRead(ref buffer, out M1350Message message);
+
+        Assert.IsTrue(result);
+        Assert.IsInstanceOfType<FailureMessage>(message);
+        Assert.AreEqual(expected.Block, ((FailureMessage)message).Block);
+    }
+
+    [TestMethod]
+    public void WriteMessageShouldRejectOutboundReplayMessages()
+    {
+        ArrayBufferWriter<byte> output = new();
+        IdMessage outbound = new IdMessage(CreateIdentityBlock()) with { Direction = M1350MessageDirection.Outbound };
+
+        Assert.ThrowsExactly<ArgumentException>(() => M1350FmWriter.WriteMessage(output, outbound));
     }
 
     public TestContext TestContext { get; set; } = null!;
